@@ -3,9 +3,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_youtube/flutter_youtube.dart';
 import 'package:provider/provider.dart';
-import 'package:re_walls/core/utils/theme.dart';
-import 'package:re_walls/core/viewmodels/carousel_wallpaper_state.dart';
-import 'package:re_walls/models/video.dart';
+import 'package:animemes/core/utils/models/response.dart';
+import 'package:animemes/core/utils/theme.dart';
+import 'package:animemes/core/viewmodels/carousel_wallpaper_state.dart';
+import 'package:animemes/models/video.dart';
+import 'package:animemes/ui/views/wallpaper.dart';
 import '../../core/utils/constants.dart';
 import '../views/selector.dart';
 
@@ -30,6 +32,8 @@ class _NewWallpapersState extends State<NewWallpapers>
     final themeState = Provider.of<ThemeNotifier>(context);
     final themeData = themeState.getTheme();
     final List<Video> videos = dataState.videos;
+    final List<Post> posts = dataState.posts;
+    print('posts: $posts');
 
     return dataState.state == kdataFetchState.IS_LOADING
         ? Container(
@@ -50,32 +54,118 @@ class _NewWallpapersState extends State<NewWallpapers>
                 children: <Widget>[
                   ShowSelectorWidget(
                     title:
-                        'Best of Youtube Anime Memes',
+                        'Novos Memes de Anime',
                     onTap: () async {
-                      SelectorCallback selected =
-                          await showModalBottomSheet<SelectorCallback>(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (BuildContext context) {
-                                return SelectorWidget(
-                                  themeData: themeData,
-                                  filterSelected: dataState.selectedFilter,
-                                  subredditSelected:
-                                      dataState.selectedSubreddit,
-                                );
-                              });
-                      if (selected != null) {
-                        dataState.changeSelected(selected);
-                      }
+                      // SelectorCallback selected =
+                      //     await showModalBottomSheet<SelectorCallback>(
+                      //         context: context,
+                      //         isScrollControlled: true,
+                      //         backgroundColor: Colors.transparent,
+                      //         builder: (BuildContext context) {
+                      //           return SelectorWidget(
+                      //             themeData: themeData,
+                      //             filterSelected: dataState.selectedFilter,
+                      //             subredditSelected:
+                      //                 dataState.selectedSubreddit,
+                      //           );
+                      //         });
+                      // if (selected != null) {
+                      //   dataState.changeSelected(selected);
+                      // }
                     },
                   ),
-                  CarouselSlider(
+                  false ? Container() : CarouselSlider(
                     enlargeCenterPage: true,
                     autoPlay: true,
                     height: 250.0,
                     viewportFraction: 0.7,
-                    items: videos.map((video) {
+                    items:  
+                      posts != null ? posts.map((post) {
+                        print(post.name);
+                        return GestureDetector(
+                              onTap: () {
+                                // FlutterYoutube.playYoutubeVideoById(apiKey: API_KEY, videoId: post.id);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => WallpaperPage(
+                                            heroId: 'popular${post.name}',
+                                            posts: posts,
+                                            index: posts.indexOf(post),
+                                          )));
+                              },
+                              child: Card(
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: GestureDetector(
+                                  child: Hero(
+                                    tag: 'epic${post.name}',
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      height: 200,
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        child: CachedNetworkImage(
+                                            errorWidget: (context, url,
+                                                    error) =>
+                                                Container(
+                                                  width: double.infinity,
+                                                  height: double.infinity,
+                                                  child: Center(
+                                                    child: Icon(
+                                                      Icons.error,
+                                                      color:
+                                                          themeData.accentColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                Center(
+                                                  child: Container(
+                                                      width: double.infinity,
+                                                      height: double.infinity,
+                                                      color: themeData
+                                                          .primaryColorDark,
+                                                      child: Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation(
+                                                                themeData
+                                                                    .accentColor),
+                                                      ))),
+                                                ),
+                                            imageUrl: post.preview.images[0].resolutions.length <= 3
+                                                        ? post
+                                                            .preview
+                                                            .images[0]
+                                                            .resolutions[post
+                                                                    .preview
+                                                                    .images[0]
+                                                                    .resolutions
+                                                                    .length -
+                                                                1]
+                                                            .url
+                                                            .replaceAll('amp;', '')
+                                                        : post
+                                                            .preview
+                                                            .images[0]
+                                                            .resolutions[3]
+                                                            .url
+                                                            .replaceAll('amp;', ''),),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              )
+                            );
+                          }).toList() : 
+                    
+                    true ? [Container()] : videos.map((video) {
                       return Builder(
                         builder: (BuildContext context) {
                           return Padding(

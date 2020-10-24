@@ -22,7 +22,7 @@ class _SettingsPageState extends State<SettingsPage>
   static const String appUrl =
           'https://play.google.com/store/apps/details?id=com.renannssh.animeme',
       codeUrl = 'https://github.com/RenanNSsh/Animeme',
-      issuesUrl = 'https://github.com/RenanNSsh/Animeme/issues';
+      issuesUrl = 'mailto:renan.sanches@exception.com.br?subject=Reportar erro&body=Gostaria%20de%20reportar%20o%20seguinte%20erro:';
 
   @override
   void initState() {
@@ -61,12 +61,12 @@ class _SettingsPageState extends State<SettingsPage>
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         children: <Widget>[
           CardWithChildren(
-            title: 'Look And Feel',
+            title: 'Aparência e Sentimento',
             children: <Widget>[
               CustomListTile(
-                title: 'Theme',
+                title: 'Tema',
                 icon: FontAwesomeIcons.palette,
-                subtitle: 'Select the way you app looks.',
+                subtitle: 'Seleciona a forma com que o app pareça.',
                 onTap: () {
                   showThemeChangerDialog(context);
                 },
@@ -74,15 +74,15 @@ class _SettingsPageState extends State<SettingsPage>
             ],
           ),
           CardWithChildren(
-            title: 'Nerd Stuff',
+            title: 'Coisas de Nerd',
             children: <Widget>[
               CustomListTile(
-                title: 'Clear Cache',
+                title: 'Limpar o Cache',
                 icon: Icons.memory,
-                subtitle: 'Total Cache Size : $cacheSize',
+                subtitle: 'Tamanho Total do Cache : $cacheSize',
                 onTap: () async {
-                  if (await showConfirmationDialog(context, 'Are you sure?',
-                      'Are you sure you want to clear cache?')) {
+                  if (await showConfirmationDialog(context, 'Tem certeza?',
+                      'Você tem certeza que deseja limpar o cache?')) {
                     clearCache();
                   }
                 },
@@ -97,29 +97,23 @@ class _SettingsPageState extends State<SettingsPage>
 
   Widget _supportDev(ThemeData theme) {
     return CardWithChildren(
-      title: 'Support Development',
+      title: 'Apoiar ao Desenvolvimento',
       children: <Widget>[
         CustomListTile(
           icon: Icons.share,
-          title: 'Share',
-          subtitle: 'Share this app with your friends.',
+          title: 'Compartilhar',
+          subtitle: 'Compartilhe este app com seus amigos.',
           onTap: () => Share.share(appUrl),
         ),
         CustomListTile(
-          icon: FontAwesomeIcons.github,
-          title: 'GitHub',
-          subtitle: 'View the source code on GitHub.',
-          onTap: () => _launchURL(codeUrl),
-        ),
-        CustomListTile(
           icon: Icons.star,
-          title: 'Rate the app',
-          subtitle: 'Rate the app on Google Play.',
+          title: 'Avaliar o app',
+          subtitle: 'Avalie o app na Play Store.',
           onTap: () => _launchURL(appUrl),
         ),
         CustomListTile(
           icon: FontAwesomeIcons.bug,
-          title: 'Report a bug',
+          title: 'Reportar um erro.',
           onTap: () => _launchURL(issuesUrl),
         ),
       ],

@@ -3,8 +3,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:re_walls/core/utils/constants.dart';
-import 'package:re_walls/ui/widgets/general.dart';
+import 'package:animemes/core/utils/constants.dart';
+import 'package:animemes/ui/widgets/general.dart';
 import '../../core/utils/models/response.dart';
 import '../../core/utils/theme.dart';
 import '../widgets/resolution_selector.dart';

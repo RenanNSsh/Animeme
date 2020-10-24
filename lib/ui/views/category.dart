@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:re_walls/core/utils/subreddits.dart';
+import 'package:animemes/core/utils/subreddits.dart';
 import '../../core/utils/constants.dart';
 import '../../core/utils/theme.dart';
 import '../widgets/general.dart';

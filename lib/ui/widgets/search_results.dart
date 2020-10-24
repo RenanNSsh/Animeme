@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:re_walls/core/utils/constants.dart';
+import 'package:animemes/core/utils/constants.dart';
 import '../../core/utils/api_endpoints.dart';
 import '../../core/utils/models/response.dart';
 import 'package:http/http.dart' as http;

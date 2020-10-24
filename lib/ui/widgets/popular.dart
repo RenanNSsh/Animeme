@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:re_walls/core/utils/theme.dart';
-import 'package:re_walls/core/viewmodels/grid_wallpaper_state.dart';
+import 'package:animemes/core/utils/theme.dart';
+import 'package:animemes/core/viewmodels/grid_wallpaper_state.dart';
 import '../../core/utils/constants.dart';
 import '../views/selector.dart';
 import '../../core/utils/api_endpoints.dart';
@@ -32,7 +32,7 @@ class _PopularWallpapersState extends State<PopularWallpapers>
     final themeData = themeState.getTheme();
     final List<Post> posts = dataState.posts;
 
-    return dataState.state == kdataFetchState.IS_LOADING
+    return posts == null 
         ? Container(
             width: double.infinity,
             height: 200,
@@ -54,37 +54,42 @@ class _PopularWallpapersState extends State<PopularWallpapers>
                 children: <Widget>[
                   ListTile(
                     dense: true,
-                    trailing: Icon(Icons.edit,
-                        color: themeData.textTheme.bodyText1.color),
+                    // trailing: Icon(Icons.edit,
+                    //     color: themeData.textTheme.bodyText1.color),
                     title: Text(
-                        '${kfilterValues[dataState.selectedFilter]} on r/${dataState.selectedSubreddit.join(', ')}',
+                        'Todos os Memes de Anime',
                         maxLines: 2,
                         overflow: TextOverflow.clip,
                         style: themeData.textTheme.caption),
                     onTap: () async {
-                      SelectorCallback selected =
-                          await showModalBottomSheet<SelectorCallback>(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (BuildContext context) {
-                                return SelectorWidget(
-                                  themeData: themeData,
-                                  filterSelected: dataState.selectedFilter,
-                                  subredditSelected:
-                                      dataState.selectedSubreddit,
-                                );
-                              });
+                      // SelectorCallback selected =
+                      //     await showModalBottomSheet<SelectorCallback>(
+                      //         context: context,
+                      //         isScrollControlled: true,
+                      //         backgroundColor: Colors.transparent,
+                      //         builder: (BuildContext context) {
+                      //           return SelectorWidget(
+                      //             themeData: themeData,
+                      //             filterSelected: dataState.selectedFilter,
+                      //             subredditSelected:
+                      //                 dataState.selectedSubreddit,
+                      //           );
+                      //         });
 
-                      if (selected != null) {
-                        dataState.changeSelected(selected);
-                      }
+                      // if (selected != null) {
+                      //   dataState.changeSelected(selected);
+                      // }
                     },
                   ),
-                  WallpaperList(
-                    posts: posts,
+                  Consumer<GridWallpaperState>(
+                    builder: (context, store, child){
+                      return WallpaperList(
+                    posts: store.posts,
                     themeData: themeData,
-                  ),
+                  );
+                    },
+                  )
+                  
                 ],
               );
   }

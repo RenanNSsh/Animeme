@@ -74,14 +74,14 @@ showConfirmationDialog(
         content: Text(content, style: state.textTheme.bodyText1),
         actions: <Widget>[
           FlatButton(
-            child: Text('Yes', style: TextStyle(color: state.accentColor)),
+            child: Text('Sim', style: TextStyle(color: state.accentColor)),
             onPressed: () {
               confirm = true;
               Navigator.pop(context);
             },
           ),
           FlatButton(
-            child: Text('No', style: TextStyle(color: state.accentColor)),
+            child: Text('Não', style: TextStyle(color: state.accentColor)),
             onPressed: () {
               confirm = false;
               Navigator.pop(context);
@@ -104,7 +104,7 @@ showThemeChangerDialog(BuildContext context) {
 }
 
 class ThemeChangerWidget extends StatelessWidget {
-  final List<String> string = ['Light', 'Dark', 'Amoled'];
+  final List<String> string = ['Claro', 'Escuro', 'Amoled'];
   @override
   Widget build(BuildContext context) {
     final stateData = Provider.of<ThemeNotifier>(context);
@@ -116,7 +116,7 @@ class ThemeChangerWidget extends StatelessWidget {
           backgroundColor: state.primaryColor,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-          title: Text('Select Theme', style: state.textTheme.bodyText2),
+          title: Text('Selecione o Tema', style: state.textTheme.bodyText2),
           content: Container(
             width: 0.0,
             child: ListView.builder(

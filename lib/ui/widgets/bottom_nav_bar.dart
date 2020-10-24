@@ -30,7 +30,7 @@ class BottomNavyBar extends StatelessWidget {
 
   Widget _buildItem(BottomNavyBarItem item, bool isSelected) {
     return AnimatedContainer(
-      width: isSelected ? 120 : 50,
+      width: isSelected ? 140 : 50,
       height: double.maxFinite,
       duration: animationDuration,
       decoration: BoxDecoration(

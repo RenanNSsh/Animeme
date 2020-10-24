@@ -1,4 +1,4 @@
-package com.bimsina.re_walls
+package com.renannnsh.animemes
 
 import android.os.Bundle
 
@@ -13,7 +13,7 @@ import android.os.Build
 import android.annotation.TargetApi
 import android.content.Context
 
-private const val CHANNEL = "com.bimsina.re_walls/wallpaper"
+private const val CHANNEL = "com.renannnsh.animemes/wallpaper"
 private const val HOME = "setWallpaper"
 private const val LOCK = "setLockWallpaper"
 
