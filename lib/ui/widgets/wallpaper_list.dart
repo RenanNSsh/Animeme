@@ -1,4 +1,6 @@
+import 'package:animemes/core/utils/ad_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -18,10 +20,60 @@ class WallpaperList extends StatefulWidget {
 }
 
 class _WallpaperListState extends State<WallpaperList> {
+
+  InterstitialAd _interstitialAd;
+  bool _isInterstitialAdReady;
+  Post nextPost;
+  List<Post> posts;
+  int nextPostIndex;
     
   @override
   void initState() {
     super.initState();
+
+    _isInterstitialAdReady = false;
+
+    _interstitialAd = InterstitialAd(
+      adUnitId: AdManager.interstitialAdUnitId,
+      listener: _onInterstitialAdEvent,
+    );
+
+
+    if(!_isInterstitialAdReady) {
+      _loadInterstitialAd();
+    }
+  }
+
+  void _onInterstitialAdEvent(MobileAdEvent event) {
+    switch (event) {
+      case MobileAdEvent.loaded:
+        _isInterstitialAdReady = true;
+        break;
+      case MobileAdEvent.failedToLoad:
+        _isInterstitialAdReady = false;
+        print('Failed to load an interstitial ad');
+        break;
+      case MobileAdEvent.closed:
+        _moveToMemeDetail(nextPost, posts,nextPostIndex);
+        break;
+      default:
+      // do nothing
+    }
+  }
+
+  _moveToMemeDetail(Post post, List<Post> postList, int index){
+    if(post != null && postList != null && index != null){
+      Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WallpaperPage(
+          heroId: 'popular${postList[index].name}',
+          posts: postList,
+          index: index,
+        )));
+    }else{
+      print('null');
+    }
   }
 
   @override
@@ -46,6 +98,10 @@ class _WallpaperListState extends State<WallpaperList> {
         : wallpaperGrid(widget.posts);
   }
 
+  void _loadInterstitialAd() {
+    _interstitialAd.load();
+  }
+
   Widget wallpaperGrid(List<Post> list) {
     final dataState = Provider.of<GridWallpaperState>(context);
     
@@ -66,14 +122,14 @@ class _WallpaperListState extends State<WallpaperList> {
           ),
           child: GestureDetector(
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => WallpaperPage(
-                            heroId: 'popular${list[index].name}',
-                            posts: list,
-                            index: index,
-                          )));
+                nextPost = list[index];
+                posts = list;
+                nextPostIndex = index;
+                print(_isInterstitialAdReady);
+                if (_isInterstitialAdReady) {
+                  _interstitialAd.show();
+                }
+              _moveToMemeDetail(list[index],list,index);
             },
             child: Hero(
               tag: 'popular${list[index].name}',
@@ -147,5 +203,12 @@ class _WallpaperListState extends State<WallpaperList> {
         // );
       },
     );
+  }
+
+  @override
+  void dispose(){
+
+    _interstitialAd?.dispose();
+    super.dispose();
   }
 }
