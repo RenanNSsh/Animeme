@@ -240,7 +240,7 @@ class ShowSelectorWidget extends StatelessWidget {
     final ThemeData themeData = themeNotifier.getTheme();
     return ListTile(
       dense: true,
-      trailing: Icon(Icons.edit, color: themeData.textTheme.bodyText1.color),
+      // trailing: Icon(Icons.edit, color: themeData.textTheme.bodyText1.color),
       title: Text(title,
           maxLines: 2,
           overflow: TextOverflow.clip,

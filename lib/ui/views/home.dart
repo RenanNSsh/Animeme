@@ -1,4 +1,6 @@
 import 'package:provider/provider.dart';
+import 'package:re_walls/core/utils/constants.dart';
+import 'package:re_walls/core/viewmodels/grid_wallpaper_state.dart';
 import '../../ui/widgets/bottom_nav_bar.dart';
 import '../../core/utils/theme.dart';
 import 'search_page.dart';
@@ -37,7 +39,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: state.primaryColor,
         elevation: 0,
         title: Text(
-          'Animeme',
+          'Animemes',
           style: state.textTheme.headline5,
         ),
         actions: <Widget>[
@@ -62,7 +64,10 @@ class _HomePageState extends State<HomePage> {
             });
           },
           children: <Widget>[
-            MainBody(),
+            ChangeNotifierProvider(
+              builder: (_) => GridWallpaperState(kdataFetchState.IS_LOADING),
+              child: MainBody(),
+            ),
             // Category(),
             // ForYou(),
             SettingsPage(),
@@ -77,11 +82,12 @@ class _HomePageState extends State<HomePage> {
         },
         selectedColor: state.accentColor,
         backgroundColor: state.primaryColor,
+
         showElevation: false,
         items: [
           BottomNavyBarItem(
             icon: Icon(Icons.home),
-            title: Text('Home'),
+            title: Text('Inicio'),
           ),
           // BottomNavyBarItem(
           //   icon: Icon(Icons.category),
@@ -92,8 +98,9 @@ class _HomePageState extends State<HomePage> {
           //   title: Text('Exact Fit'),
           // ),
           BottomNavyBarItem(
+            
             icon: Icon(Icons.settings),
-            title: Text('Settings'),
+            title: Text('Configurações'),
           ),
         ],
       ),

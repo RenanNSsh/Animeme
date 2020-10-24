@@ -10,15 +10,17 @@ import '../utils/constants.dart';
 import '../utils/models/response.dart';
 import 'package:http/http.dart' as http;
 
-const SEARCH = 'Best of Anime Crack';
+const SEARCH = 'Novos Memes';
 const API_KEY = 'AIzaSyAWUZK3RVI8-VQkf_8UwBRzA08n5h7HWco';
 
 class CarouselWallpaperState extends ChangeNotifier {
   List<Post> _posts;
   List<Video> _videos;
+  String search = '';
   kdataFetchState _fetchState;
 
   int _selectedFilter;
+  int currentCall = 0;
   List<String> _subreddits, _selectedSubreddit;
 
   CarouselWallpaperState(this._fetchState, this._posts) {
@@ -36,30 +38,66 @@ class CarouselWallpaperState extends ChangeNotifier {
     SharedPreferences.getInstance().then((preferences) {
       _subreddits =
           preferences.getStringList('subredditsList') ?? initialSubredditsList;
-      _selectedFilter = preferences.getInt('carousel_filter') ?? 0;
+      _selectedFilter = preferences.getInt('carousel_filter') ?? 1;
       _selectedSubreddit = preferences.getStringList('carousel_subreddit') ??
-          [_subreddits[0], _subreddits[1]];
+          ['AnimemeBR'];
 
       fetchWallPapers(EndPoints.getPosts(_selectedSubreddit.join('+'),
           kfilterValues[_selectedFilter].toLowerCase()));
     });
   }
 
-  fetchWallPapers(String subreddit) async {
-    _fetchState = kdataFetchState.IS_LOADING;
-    notifyListeners();
-    try {
-      const YOUTUBE_API = 'https://www.googleapis.com/youtube/v3/search?regionCode=US&part=snippet&q=$SEARCH&type=video&key=$API_KEY&maxResults=20';
-      http.get(YOUTUBE_API).then((res) {
-        _videos =_decode(res);
-        _fetchState = kdataFetchState.IS_LOADED;
+  fetchMemes(String endpoint){
+
+    currentCall++;
+    var lastCall = currentCall;
+    Future.delayed(Duration(milliseconds: 500)).then((x){
+
+      if(lastCall == currentCall){
+        _fetchState = kdataFetchState.IS_LOADING;
+        
         notifyListeners();
-      
-      });
-    } catch (e) {
-      _fetchState = kdataFetchState.ERROR_ENCOUNTERED;
-      notifyListeners();
+        try {
+          http.get(endpoint).then((res) {
+            if (res.statusCode == 200) {
+              var decodeRes = jsonDecode(res.body);
+              Reddit temp = Reddit.fromJson(decodeRes);
+
+              if(posts == null){ 
+                _posts = [];  
+              }
+              temp.data.children.forEach((children) {
+                if (children.post.postHint == 'image') {
+                  if(posts.any((x){return x.name == children.post.name;}) ){
+                    children.post.name = '${children.post.name}$currentCall';
+                  }
+                  posts.add(children.post);
+                }
+              });
+            
+
+              _fetchState = kdataFetchState.IS_LOADED;
+              print('notify: ${posts.length}');
+              notifyListeners();
+            } else {
+              _fetchState = kdataFetchState.ERROR_ENCOUNTERED;
+              notifyListeners();
+            }
+          });
+        } catch (e) {
+          _fetchState = kdataFetchState.ERROR_ENCOUNTERED;
+          notifyListeners();
+        }
+      }
+    });
+  }
+
+  fetchWallPapers([String subreddit]) async {
+    if(subreddit != null){
+      search = subreddit;
     }
+    var page = 'limit=15';
+    fetchMemes('$search?$page');
   }
 
 

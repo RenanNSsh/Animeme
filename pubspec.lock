@@ -257,10 +257,12 @@ packages:
   share:
     dependency: "direct main"
     description:
-      name: share
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.3+1"
+      path: "packages/share"
+      ref: HEAD
+      resolved-ref: "1494b043d03799dd14e689552d1218918435f9f5"
+      url: "git://github.com/himanshusharma89/plugins.git"
+    source: git
+    version: "0.6.2+1"
   shared_preferences:
     dependency: "direct main"
     description:

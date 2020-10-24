@@ -13,8 +13,23 @@ class MainBody extends StatefulWidget {
 
 class _MainBodyState extends State<MainBody>
     with AutomaticKeepAliveClientMixin<MainBody> {
+
+  ScrollController _scrollController = ScrollController();
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void initState() { 
+    super.initState();
+    _scrollController.addListener(() { 
+      if(_scrollController.position.pixels >= (_scrollController.position.maxScrollExtent * 0.7)){
+        print('atual: ${_scrollController.position.pixels}');
+        print('max: ${_scrollController.position.maxScrollExtent}');
+        final dataState = Provider.of<GridWallpaperState>(context);
+        dataState.fetchWallPapers();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +37,7 @@ class _MainBodyState extends State<MainBody>
 
     return ListView(
       shrinkWrap: true,
+      controller: _scrollController,
       physics: BouncingScrollPhysics(),
       children: <Widget>[
         ChangeNotifierProvider(
@@ -29,10 +45,8 @@ class _MainBodyState extends State<MainBody>
               CarouselWallpaperState(kdataFetchState.IS_LOADING, null),
           child: NewWallpapers(),
         ),
-        ChangeNotifierProvider(
-          builder: (_) => GridWallpaperState(kdataFetchState.IS_LOADING, null),
-          child: PopularWallpapers(),
-        ),
+        PopularWallpapers(),
+        
       ],
     );
   }

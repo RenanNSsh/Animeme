@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_downloader/image_downloader.dart';
@@ -8,11 +10,14 @@ import 'package:provider/provider.dart';
 import 'package:re_walls/core/utils/theme.dart';
 import 'web_page.dart';
 import '../../core/utils/dialog_utils.dart';
+import 'package:path_provider/path_provider.dart';
 import '../widgets/general.dart';
 import 'package:share/share.dart';
 import '../../core/utils/models/response.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
+import 'package:http/http.dart' as http;
 
 class WallpaperPage extends StatefulWidget {
   final String heroId;
@@ -30,7 +35,7 @@ class _WallpaperPageState extends State<WallpaperPage>
   AnimationController _controller;
   BoxFit fit = BoxFit.contain;
   Post currentPost;
-  static const platform = const MethodChannel('com.bimsina.re_walls/wallpaper');
+  static const platform = const MethodChannel('com.renannnsh.animemes/wallpaper');
   PageController _pageController;
 
   @override
@@ -63,10 +68,10 @@ class _WallpaperPageState extends State<WallpaperPage>
 
       if (status == PermissionStatus.granted) {
         try {
-          showToast('Check the notification to see progress.');
-
+          showToast('Cheque a barra de notificações para ver o progresso.');
+          var directoryPath = (await getExternalStorageDirectory()).path;
           var imageId = await ImageDownloader.downloadImage(currentPost.url,
-              destination: AndroidDestinationType.directoryDownloads);
+              destination: AndroidDestinationType.custom(directory: '$directoryPath/Animeme${DateTime.now().toIso8601String()}.png'));
           if (imageId == null) {
             return;
           }
@@ -88,7 +93,7 @@ class _WallpaperPageState extends State<WallpaperPage>
     if (status == PermissionStatus.granted) {
       downloadImage();
     } else {
-      showToast('Please grant storage permission.');
+      showToast('Por favor, conceda permissão de armazenamento.');
     }
   }
 
@@ -128,61 +133,96 @@ class _WallpaperPageState extends State<WallpaperPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text(
-            currentPost.title,
-            style: themeData.textTheme.bodyText2,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            'Posted on r/${currentPost.subreddit} by u/${currentPost.author}',
-            style: themeData.textTheme.bodyText1,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          // Text(
+          //   currentPost.title,
+          //   style: themeData.textTheme.bodyText2,
+          //   maxLines: 1,
+          //   overflow: TextOverflow.ellipsis,
+          // ),
+          // Text(
+          //   'Posted on r/${currentPost.subreddit} by u/${currentPost.author}',
+          //   style: themeData.textTheme.bodyText1,
+          //   maxLines: 1,
+          //   overflow: TextOverflow.ellipsis,
+          // ),
           Row(
             children: <Widget>[
-              ColButton(
-                title: 'Set Wallpaper',
-                icon: Icons.wallpaper,
-                onTap: () async {
-                  showLoadingDialog(context);
-                  await Future.delayed(Duration(seconds: 1));
-                  _setWallpaper();
-                },
-              ),
+              // ColButton(
+              //   title: 'Set Wallpaper',
+              //   icon: Icons.wallpaper,
+              //   onTap: () async {
+              //     showLoadingDialog(context);
+              //     await Future.delayed(Duration(seconds: 1));
+              //     _setWallpaper();
+              //   },
+              // ),
               ColButton(
                 title: 'Download',
                 icon: Icons.file_download,
                 onTap: downloadImage,
               ),
               ColButton(
-                title: 'Share',
+                title: 'Compartilhar',
                 icon: Icons.share,
                 onTap: () {
-                  Share.share(
-                      'Checkout this awesome wallpaper I found on reWalls ${currentPost.url}');
+                  saveAndShare(currentPost.url, currentPost.title);
                 },
               ),
-              ColButton(
-                title: 'Source',
-                icon: Icons.open_in_browser,
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => WebPage(
-                                title: currentPost.title,
-                                initialPage: 'https://www.reddit.com' +
-                                    currentPost.permalink,
-                              )));
-                },
-              ),
+              // ColButton(
+              //   title: 'Source',
+              //   icon: Icons.open_in_browser,
+              //   onTap: () {
+              //     Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //             builder: (context) => WebPage(
+              //                   title: currentPost.title,
+              //                   initialPage: 'https://www.reddit.com' +
+              //                       currentPost.permalink,
+              //                 )));
+              //   },
+              // ),
             ],
           ),
         ],
       ),
     );
+  }
+
+  String getFileName(String imageUrl, String imageName ){
+    imageName = imageName.replaceAll(' ', '');
+    imageName = imageName.replaceAll('/', '');
+    var nameIndex = imageUrl.lastIndexOf('/');
+    String fileName = '${imageName}.png';
+    if(nameIndex != -1 && nameIndex != imageName.length-1){
+      var fileNameImage = imageUrl.substring(nameIndex+1, imageUrl.length);
+      if(fileNameImage.isNotEmpty){
+        fileName = fileNameImage;
+      }
+    }
+    return fileName;
+  }
+
+  Future<Null> saveAndShare(String imageUrl, String imageName) async {
+    String fileName = getFileName(imageUrl,imageName);
+
+    final RenderBox box = context.findRenderObject();
+    if (Platform.isAndroid) {
+      var url = imageUrl;
+      var response = await http.get(url);
+      final documentDirectory = (await getExternalStorageDirectory()).path;
+      File imgFile = new File('$documentDirectory/$fileName');
+      imgFile.writeAsBytesSync(response.bodyBytes);
+
+      Share.shareFile(File('$documentDirectory/$fileName'),
+          subject: 'Meme do APP Animeme',
+          text: 'Ei, olha só esse meme que vi no app "Animeme"',
+          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+    } else {
+      Share.share('Meme do APP Animeme',
+          subject: 'Ei, olha só esse meme que vi no app "Animeme"',
+          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+    }
   }
 
   Widget wallpaperBody(ThemeData themeData) {

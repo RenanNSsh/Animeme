@@ -11,18 +11,18 @@ import 'package:http/http.dart' as http;
 
 class GridWallpaperState extends ChangeNotifier {
   Data _data;
-  List<Post> _posts = [];
+  List<Post> posts;
+  int currentCall = 0;
   String search;
   kdataFetchState _fetchState;
 
   int _selectedFilter;
   List<String> _subreddits, _selectedSubreddit;
 
-  GridWallpaperState(this._fetchState, this._posts) {
+  GridWallpaperState(this._fetchState) {
     prepareSharedPrefs();
   }
 
-  get posts => _posts;
   get state => _fetchState;
   get selectedSubreddit => _selectedSubreddit;
   get selectedFilter => _selectedFilter;
@@ -42,34 +42,51 @@ class GridWallpaperState extends ChangeNotifier {
   }
 
   fetchMemes(String endpoint){
-    _fetchState = kdataFetchState.IS_LOADING;
-    notifyListeners();
-    try {
-      http.get(endpoint).then((res) {
-        if (res.statusCode == 200) {
-          var decodeRes = jsonDecode(res.body);
-          Reddit temp = Reddit.fromJson(decodeRes);
-          _data = temp.data;
-          if(_posts == null){
-            _posts = [];  
-          }
-          temp.data.children.forEach((children) {
-            if (children.post.postHint == 'image') {
-              _posts.add(children.post);
+
+    currentCall++;
+    var lastCall = currentCall;
+    Future.delayed(Duration(milliseconds: 500)).then((x){
+
+      if(lastCall == currentCall){
+        _fetchState = kdataFetchState.IS_LOADING;
+        
+        notifyListeners();
+        try {
+          http.get(endpoint).then((res) {
+            if (res.statusCode == 200) {
+              var decodeRes = jsonDecode(res.body);
+              Reddit temp = Reddit.fromJson(decodeRes);
+
+              if(posts == null){ 
+                posts = [];  
+              }
+              if(_data== null || _data.after != temp.data.after){
+                _data = temp.data;
+                temp.data.children.forEach((children) {
+                  if (children.post.postHint == 'image') {
+                    if(posts.any((x){return x.name == children.post.name;}) ){
+                      children.post.name = '${children.post.name}$currentCall';
+                    }
+                    posts.add(children.post);
+                  }
+                });
+
+              }
+
+              _fetchState = kdataFetchState.IS_LOADED;
+              print('notify: ${posts.length}');
+              notifyListeners();
+            } else {
+              _fetchState = kdataFetchState.ERROR_ENCOUNTERED;
+              notifyListeners();
             }
           });
-
-          _fetchState = kdataFetchState.IS_LOADED;
-          notifyListeners();
-        } else {
+        } catch (e) {
           _fetchState = kdataFetchState.ERROR_ENCOUNTERED;
           notifyListeners();
         }
-      });
-    } catch (e) {
-      _fetchState = kdataFetchState.ERROR_ENCOUNTERED;
-      notifyListeners();
-    }
+      }
+    });
   }
 
   fetchWallPapers([String subreddit]) async {
@@ -78,7 +95,7 @@ class GridWallpaperState extends ChangeNotifier {
     }
     var page = '';
     if(_data != null && _data.after != null && _data.after.isNotEmpty ){
-      page = 'page=$_data.after';
+      page = 'after=${_data.after}';
     }
     fetchMemes('$search?$page');
   }

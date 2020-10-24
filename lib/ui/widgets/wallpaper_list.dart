@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:re_walls/core/utils/constants.dart';
 import 'package:re_walls/core/viewmodels/grid_wallpaper_state.dart';
 import '../views/wallpaper.dart';
 import '../../core/utils/models/response.dart';
@@ -47,16 +48,17 @@ class _WallpaperListState extends State<WallpaperList> {
 
   Widget wallpaperGrid(List<Post> list) {
     final dataState = Provider.of<GridWallpaperState>(context);
+    
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, childAspectRatio: 0.7),
       padding: const EdgeInsets.all(0),
-      itemCount: list.length,
+      itemCount: list.length + (dataState.state == kdataFetchState.IS_LOADING ? 1 : 0),
       shrinkWrap: true,
       physics: ScrollPhysics(),
       scrollDirection: Axis.vertical,
       itemBuilder: (BuildContext context, int index) {
-        if(true){
+        if(index < list.length){
           return Card(
           elevation: 5,
           shape: RoundedRectangleBorder(
@@ -129,6 +131,10 @@ class _WallpaperListState extends State<WallpaperList> {
             ),
           ),
         );
+        }else{
+          return Center(
+            child:CircularProgressIndicator()
+          );
         }
         // return Container(
         //   height: 30,
