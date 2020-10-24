@@ -1,4 +1,6 @@
+import 'package:animemes/core/utils/ad_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -18,14 +20,53 @@ class WallpaperList extends StatefulWidget {
 }
 
 class _WallpaperListState extends State<WallpaperList> {
-    
+    static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    keywords: <String>['foo', 'bar'],
+    contentUrl: 'http://foo.com/bar.html',
+    childDirected: true,
+    nonPersonalizedAds: true,
+  );
+
+  BannerAd _bannerAd;
+  NativeAd _nativeAd;
+  InterstitialAd _interstitialAd;
+  int _coins = 0;
+
+  BannerAd createBannerAd() {
+    return BannerAd(
+      adUnitId: BannerAd.testAdUnitId,
+      size: AdSize.banner,
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("BannerAd event $event");
+      },
+    );
+  }
+
+  InterstitialAd createInterstitialAd() {
+    return InterstitialAd(
+      adUnitId: AdManager.interstitialAdUnitId,
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("InterstitialAd event $event");
+      },
+    );
+  }
+
+
+
   @override
   void initState() {
-    super.initState();
+    super.initState(); 
+    FirebaseAdMob.instance.initialize(appId: AdManager.appId);
+    _interstitialAd = createInterstitialAd();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
+    
     return widget.posts.length == 0
         ? SizedBox(
             height: 200,
@@ -66,6 +107,15 @@ class _WallpaperListState extends State<WallpaperList> {
           ),
           child: GestureDetector(
             onTap: () {
+              setState(() {
+                  createInterstitialAd()
+                    ..load()
+                    ..show(
+                      anchorType: AnchorType.bottom,
+                      anchorOffset: 0.0,
+                      horizontalCenterOffset: 0.0,
+                    );
+              });
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -73,6 +123,7 @@ class _WallpaperListState extends State<WallpaperList> {
                             heroId: 'popular${list[index].name}',
                             posts: list,
                             index: index,
+                            dataState: dataState,
                           )));
             },
             child: Hero(

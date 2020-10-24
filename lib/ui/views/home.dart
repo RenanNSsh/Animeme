@@ -1,3 +1,4 @@
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:provider/provider.dart';
 import 'package:animemes/core/utils/constants.dart';
 import 'package:animemes/core/viewmodels/grid_wallpaper_state.dart';
@@ -22,6 +23,11 @@ class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
 
   @override
+  void initState() { 
+    super.initState();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     _pageController.dispose();
@@ -31,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final stateData = Provider.of<ThemeNotifier>(context);
     final ThemeData state = stateData.getTheme();
-
+    
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(

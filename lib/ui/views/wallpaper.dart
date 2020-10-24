@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:animemes/core/utils/ad_manager.dart';
+import 'package:animemes/core/viewmodels/grid_wallpaper_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_downloader/image_downloader.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +19,7 @@ import 'package:share/share.dart';
 import '../../core/utils/models/response.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:photo_view/photo_view.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -23,9 +27,10 @@ class WallpaperPage extends StatefulWidget {
   final String heroId;
   final List<Post> posts;
   final int index;
+  final GridWallpaperState dataState;
 
   WallpaperPage(
-      {@required this.heroId, @required this.posts, @required this.index});
+      {@required this.heroId, @required this.posts, @required this.index, this.dataState});
   @override
   _WallpaperPageState createState() => _WallpaperPageState();
 }
@@ -37,11 +42,26 @@ class _WallpaperPageState extends State<WallpaperPage>
   Post currentPost;
   static const platform = const MethodChannel('com.renannnsh.animemes/wallpaper');
   PageController _pageController;
+  InterstitialAd _interstitialAd;
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    childDirected: true,
+    nonPersonalizedAds: true,
+  );
+
+  InterstitialAd createInterstitialAd() {
+    return InterstitialAd(
+      adUnitId: AdManager.interstitialAdUnitId,
+      listener: (MobileAdEvent event) {
+        print("InterstitialAd event $event");
+      },
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     currentPost = widget.posts[widget.index];
+    _interstitialAd = createInterstitialAd();
     _pageController = PageController(
       initialPage: widget.index,
     );
@@ -247,14 +267,25 @@ class _WallpaperPageState extends State<WallpaperPage>
                 child: PageView(
                   controller: _pageController,
                   physics: BouncingScrollPhysics(),
-                  onPageChanged: (index) {
+                  onPageChanged: (index) async{
+                    createInterstitialAd()
+                      ..load()
+                      ..show(
+                        anchorType: AnchorType.bottom,
+                        anchorOffset: 0.0,
+                        horizontalCenterOffset: 0.0,
+                    );
+                    if(index >= widget.posts.length -5){
+                      await widget.dataState.fetchWallPapers();
+                    }
                     setState(() {
                       currentPost = widget.posts[index];
                     });
                   },
-                  children: widget.posts
+                  children: widget.dataState.posts
                       .map(
-                        (item) => CachedNetworkImage(
+                        (item) => 
+                        CachedNetworkImage(
                           errorWidget: (context, url, error) => Container(
                             width: double.infinity,
                             height: double.infinity,
@@ -268,10 +299,13 @@ class _WallpaperPageState extends State<WallpaperPage>
                           placeholder: (context, url) => Stack(
                             fit: StackFit.expand,
                             children: <Widget>[
-                              Image.network(
-                                item.preview.images[0].resolutions[0].url,
-                                fit: fit,
-                              ),
+                              // PhotoView(
+                              //   imageProvider: NetworkImage(
+                              //     item.preview.images[0].resolutions[0].url,
+                                  
+                              //   ),
+                                
+                              // ),
                               Center(
                                 child: CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation(
