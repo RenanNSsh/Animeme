@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:re_walls/core/utils/constants.dart';
-import 'package:re_walls/core/viewmodels/grid_wallpaper_state.dart';
+import 'package:animemes/core/utils/constants.dart';
+import 'package:animemes/core/viewmodels/grid_wallpaper_state.dart';
 import '../views/wallpaper.dart';
 import '../../core/utils/models/response.dart';
 

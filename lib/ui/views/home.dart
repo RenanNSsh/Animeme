@@ -1,6 +1,6 @@
 import 'package:provider/provider.dart';
-import 'package:re_walls/core/utils/constants.dart';
-import 'package:re_walls/core/viewmodels/grid_wallpaper_state.dart';
+import 'package:animemes/core/utils/constants.dart';
+import 'package:animemes/core/viewmodels/grid_wallpaper_state.dart';
 import '../../ui/widgets/bottom_nav_bar.dart';
 import '../../core/utils/theme.dart';
 import 'search_page.dart';

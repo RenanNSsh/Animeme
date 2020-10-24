@@ -1,4 +1,4 @@
-import 'package:re_walls/models/video.dart';
+import 'package:animemes/models/video.dart';
 
 class Reddit {
   String kind;

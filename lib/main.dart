@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:re_walls/video_service.dart';
+import 'package:animemes/video_service.dart';
 import 'core/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ui/views/home.dart';

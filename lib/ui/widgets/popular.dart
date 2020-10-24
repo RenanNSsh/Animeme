@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:re_walls/core/utils/theme.dart';
-import 'package:re_walls/core/viewmodels/grid_wallpaper_state.dart';
+import 'package:animemes/core/utils/theme.dart';
+import 'package:animemes/core/viewmodels/grid_wallpaper_state.dart';
 import '../../core/utils/constants.dart';
 import '../views/selector.dart';
 import '../../core/utils/api_endpoints.dart';

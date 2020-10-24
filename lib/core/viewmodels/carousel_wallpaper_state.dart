@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:re_walls/core/utils/api_endpoints.dart';
-import 'package:re_walls/core/utils/subreddits.dart';
-import 'package:re_walls/models/video.dart';
-import 'package:re_walls/ui/views/selector.dart';
+import 'package:animemes/core/utils/api_endpoints.dart';
+import 'package:animemes/core/utils/subreddits.dart';
+import 'package:animemes/models/video.dart';
+import 'package:animemes/ui/views/selector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/constants.dart';
 import '../utils/models/response.dart';

@@ -3,11 +3,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_youtube/flutter_youtube.dart';
 import 'package:provider/provider.dart';
-import 'package:re_walls/core/utils/models/response.dart';
-import 'package:re_walls/core/utils/theme.dart';
-import 'package:re_walls/core/viewmodels/carousel_wallpaper_state.dart';
-import 'package:re_walls/models/video.dart';
-import 'package:re_walls/ui/views/wallpaper.dart';
+import 'package:animemes/core/utils/models/response.dart';
+import 'package:animemes/core/utils/theme.dart';
+import 'package:animemes/core/viewmodels/carousel_wallpaper_state.dart';
+import 'package:animemes/models/video.dart';
+import 'package:animemes/ui/views/wallpaper.dart';
 import '../../core/utils/constants.dart';
 import '../views/selector.dart';
 

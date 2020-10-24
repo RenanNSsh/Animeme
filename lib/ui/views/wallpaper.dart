@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:re_walls/core/utils/theme.dart';
+import 'package:animemes/core/utils/theme.dart';
 import 'web_page.dart';
 import '../../core/utils/dialog_utils.dart';
 import 'package:path_provider/path_provider.dart';

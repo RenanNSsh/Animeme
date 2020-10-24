@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:re_walls/core/utils/subreddits.dart';
+import 'package:animemes/core/utils/subreddits.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/utils/api_endpoints.dart';
 
