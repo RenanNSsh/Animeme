@@ -74,14 +74,17 @@ class _NewWallpapersState extends State<NewWallpapers>
                       // }
                     },
                   ),
-                  false ? Container() : CarouselSlider(
-                    enlargeCenterPage: true,
-                    autoPlay: true,
-                    height: 250.0,
-                    viewportFraction: 0.7,
-                    items:  
-                      posts != null ? posts.map((post) {
-                        print(post.name);
+                  posts == null || posts.length == 0 ? Container() : 
+                  CarouselSlider.builder(
+                    options: CarouselOptions(
+                      enlargeCenterPage: true,
+                      autoPlay: true,
+                      height: 250.0,
+                      viewportFraction: 0.7,
+                    ),
+                    itemCount: posts.length,
+                    itemBuilder: (context, index){
+                      var post = posts[index];
                         return GestureDetector(
                               onTap: () {
                                 // FlutterYoutube.playYoutubeVideoById(apiKey: API_KEY, videoId: post.id);
@@ -163,73 +166,8 @@ class _NewWallpapersState extends State<NewWallpapers>
                                 )
                               )
                             );
-                          }).toList() : 
+                    },
                     
-                    true ? [Container()] : videos.map((video) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                FlutterYoutube.playYoutubeVideoById(apiKey: API_KEY, videoId: video.id);
-                              },
-                              child: Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                child: GestureDetector(
-                                  child: Hero(
-                                    tag: '${video.title}',
-                                    child: SizedBox(
-                                      width: double.infinity,
-                                      height: 200,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        child: CachedNetworkImage(
-                                            errorWidget: (context, url,
-                                                    error) =>
-                                                Container(
-                                                  width: double.infinity,
-                                                  height: double.infinity,
-                                                  child: Center(
-                                                    child: Icon(
-                                                      Icons.error,
-                                                      color:
-                                                          themeData.accentColor,
-                                                    ),
-                                                  ),
-                                                ),
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) =>
-                                                Center(
-                                                  child: Container(
-                                                      width: double.infinity,
-                                                      height: double.infinity,
-                                                      color: themeData
-                                                          .primaryColorDark,
-                                                      child: Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation(
-                                                                themeData
-                                                                    .accentColor),
-                                                      ))),
-                                                ),
-                                            imageUrl: video.thumb),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
                   ),
                 ],
               );
