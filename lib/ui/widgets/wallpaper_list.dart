@@ -106,7 +106,7 @@ class _WallpaperListState extends State<WallpaperList> {
           child: GestureDetector(
             onTap: () {
               setState(() {
-                  createBannerAd()
+                  createInterstitialAd()
                     ..load()
                     ..show(
                       anchorType: AnchorType.bottom,
