@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: state.primaryColor,
             elevation: 4,
             title: Text(
-              'Animeme',
+              'Animemes',
               style: state.textTheme.headline5,
             ),
             actions: <Widget>[

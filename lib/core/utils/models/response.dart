@@ -1,5 +1,3 @@
-import 'package:animemes/models/video.dart';
-
 class Reddit {
   String kind;
   Data data;

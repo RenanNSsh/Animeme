@@ -20,6 +20,7 @@ import '../../core/utils/models/response.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:animemes/core/viewmodels/carousel_wallpaper_state.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -28,9 +29,10 @@ class WallpaperPage extends StatefulWidget {
   final List<Post> posts;
   final int index;
   final GridWallpaperState dataState;
+  final CarouselWallpaperState dataStateCarousel;
 
   WallpaperPage(
-      {@required this.heroId, @required this.posts, @required this.index, this.dataState});
+      {@required this.heroId, @required this.posts, @required this.index, this.dataState, this.dataStateCarousel});
   @override
   _WallpaperPageState createState() => _WallpaperPageState();
 }
@@ -79,6 +81,46 @@ class _WallpaperPageState extends State<WallpaperPage>
     return Scaffold(
       body: wallpaperBody(themeData),
     );
+  }
+
+  List<Widget> getPostList(ThemeData themeData){
+    var mapItens = (item) => 
+            CachedNetworkImage(
+              errorWidget: (context, url, error) => Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: Center(
+                    child: Icon(
+                  Icons.error,
+                  color: themeData.accentColor,
+                )),
+              ),
+              fit: fit,
+              placeholder: (context, url) => Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  // PhotoView(
+                  //   imageProvider: NetworkImage(
+                  //     item.preview.images[0].resolutions[0].url,
+                      
+                  //   ),
+                    
+                  // ),
+                  Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(
+                          themeData.accentColor),
+                    ),
+                  ),
+                ],
+              ),
+              imageUrl: item.url,
+            );
+        
+    if(widget.dataStateCarousel != null){
+      return widget.dataStateCarousel.posts.map<Widget>(mapItens).toList();
+    }
+    return widget.dataState.posts.map<Widget>(mapItens).toList();
   }
 
   void downloadImage() async {
@@ -235,156 +277,124 @@ class _WallpaperPageState extends State<WallpaperPage>
       imgFile.writeAsBytesSync(response.bodyBytes);
 
       Share.shareFile(File('$documentDirectory/$fileName'),
-          subject: 'Meme do APP Animeme',
-          text: 'Ei, olha só esse meme que vi no app "Animeme"',
+          subject: 'Meme do APP Animemes',
+          text: 'Ei, olha só esse meme que vi no app "Animemes"',
           sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
     } else {
-      Share.share('Meme do APP Animeme',
-          subject: 'Ei, olha só esse meme que vi no app "Animeme"',
+      Share.share('Meme do APP Animemes',
+          subject: 'Ei, olha só esse meme que vi no app "Animemes"',
           sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
     }
   }
 
   Widget wallpaperBody(ThemeData themeData) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) => Stack(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              if (_controller.isCompleted) {
-                _controller.reverse();
-              } else {
-                _controller.forward();
-              }
-            },
-            child: Hero(
-              tag: widget.heroId,
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: themeData.primaryColor,
-                child: PageView(
-                  controller: _pageController,
-                  physics: BouncingScrollPhysics(),
-                  onPageChanged: (index) async{
-                    createInterstitialAd()
-                      ..load()
-                      ..show(
-                        anchorType: AnchorType.bottom,
-                        anchorOffset: 0.0,
-                        horizontalCenterOffset: 0.0,
-                    );
-                    if(index >= widget.posts.length -5){
-                      await widget.dataState.fetchWallPapers();
-                    }
-                    setState(() {
-                      currentPost = widget.posts[index];
-                    });
-                  },
-                  children: widget.dataState.posts
-                      .map(
-                        (item) => 
-                        CachedNetworkImage(
-                          errorWidget: (context, url, error) => Container(
-                            width: double.infinity,
-                            height: double.infinity,
-                            child: Center(
-                                child: Icon(
-                              Icons.error,
-                              color: themeData.accentColor,
-                            )),
-                          ),
-                          fit: fit,
-                          placeholder: (context, url) => Stack(
-                            fit: StackFit.expand,
-                            children: <Widget>[
-                              // PhotoView(
-                              //   imageProvider: NetworkImage(
-                              //     item.preview.images[0].resolutions[0].url,
-                                  
-                              //   ),
-                                
-                              // ),
-                              Center(
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation(
-                                      themeData.accentColor),
-                                ),
-                              ),
-                            ],
-                          ),
-                          imageUrl: item.url,
-                        ),
-                      )
-                      .toList(),
+    return SafeArea(
+          child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) => Stack(
+          children: <Widget>[
+            GestureDetector(
+              onTap: () {
+                if (_controller.isCompleted) {
+                  _controller.reverse();
+                } else {
+                  _controller.forward();
+                }
+              },
+              child: Hero(
+                tag: widget.heroId,
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: themeData.primaryColor,
+                  child: PageView(
+                    controller: _pageController,
+                    physics: BouncingScrollPhysics(),
+                    
+                    onPageChanged: (index) async{
+                      createInterstitialAd()
+                        ..load()
+                        ..show(
+                          anchorType: AnchorType.bottom,
+                          anchorOffset: 0.0,
+                          horizontalCenterOffset: 0.0,
+                      );
+                      if(index >= widget.posts.length -5 && widget.dataState != null){
+                        await widget.dataState.fetchWallPapers();
+                      }
+                      setState(() {
+                        currentPost = widget.posts[index];
+                      });
+                    },
+                    children: getPostList(themeData),
+                  ),
                 ),
               ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Transform.translate(
-                  offset: Offset(0, -_controller.value * 80),
-                  child: Container(
-                    height: 80.0,
-                    width: double.infinity,
-                    padding: const EdgeInsets.only(top: 24),
-                    decoration: BoxDecoration(
-                      color: themeData.primaryColorDark.withOpacity(0.9),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(8.0),
-                        bottomRight: Radius.circular(8.0),
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Transform.translate(
+                    offset: Offset(0, -_controller.value * 60),
+                    child: Container(
+                      height: 60.0,
+                      width: double.infinity,
+                      
+                      decoration: BoxDecoration(
+                        color: themeData.primaryColorDark.withOpacity(0.9),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(8.0),
+                          bottomRight: Radius.circular(8.0),
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.arrow_back,
+                                color: themeData.textTheme.bodyText2.color,
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          // IconButton(
+                          //   icon: Icon(
+                          //     fit == BoxFit.contain
+                          //         ? Icons.fullscreen
+                          //         : Icons.fullscreen_exit,
+                          //     color: themeData.textTheme.bodyText2.color,
+                          //   ),
+                          //   onPressed: () {
+                          //     if (fit == BoxFit.contain) {
+                          //       fit = BoxFit.cover;
+                          //     } else {
+                          //       fit = BoxFit.contain;
+                          //     }
+                          //     setState(() {});
+                          //   },
+                          // )
+                        ],
                       ),
                     ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.arrow_back,
-                              color: themeData.textTheme.bodyText2.color,
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                        // IconButton(
-                        //   icon: Icon(
-                        //     fit == BoxFit.contain
-                        //         ? Icons.fullscreen
-                        //         : Icons.fullscreen_exit,
-                        //     color: themeData.textTheme.bodyText2.color,
-                        //   ),
-                        //   onPressed: () {
-                        //     if (fit == BoxFit.contain) {
-                        //       fit = BoxFit.cover;
-                        //     } else {
-                        //       fit = BoxFit.contain;
-                        //     }
-                        //     setState(() {});
-                        //   },
-                        // )
-                      ],
-                    ),
                   ),
-                ),
-                Transform.translate(
-                  offset: Offset(0, _controller.value * 150),
-                  child: bottomSheet(themeData),
-                ),
-              ],
+                  Transform.translate(
+                    offset: Offset(0, _controller.value * 150),
+                    child: bottomSheet(themeData),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

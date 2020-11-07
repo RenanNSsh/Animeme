@@ -34,9 +34,8 @@ class _WallpaperListState extends State<WallpaperList> {
 
   BannerAd createBannerAd() {
     return BannerAd(
-      adUnitId: BannerAd.testAdUnitId,
+      adUnitId: AdManager.bannerAdUnitId,
       size: AdSize.banner,
-      targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("BannerAd event $event");
       },
@@ -46,7 +45,6 @@ class _WallpaperListState extends State<WallpaperList> {
   InterstitialAd createInterstitialAd() {
     return InterstitialAd(
       adUnitId: AdManager.interstitialAdUnitId,
-      targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("InterstitialAd event $event");
       },
@@ -108,7 +106,7 @@ class _WallpaperListState extends State<WallpaperList> {
           child: GestureDetector(
             onTap: () {
               setState(() {
-                  createInterstitialAd()
+                  createBannerAd()
                     ..load()
                     ..show(
                       anchorType: AnchorType.bottom,

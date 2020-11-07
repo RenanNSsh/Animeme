@@ -10,6 +10,7 @@ import 'package:animemes/models/video.dart';
 import 'package:animemes/ui/views/wallpaper.dart';
 import '../../core/utils/constants.dart';
 import '../views/selector.dart';
+import 'package:animemes/core/viewmodels/grid_wallpaper_state.dart';
 
 import 'general.dart';
 
@@ -95,6 +96,7 @@ class _NewWallpapersState extends State<NewWallpapers>
                                             heroId: 'popular${post.name}',
                                             posts: posts,
                                             index: posts.indexOf(post),
+                                            dataStateCarousel: dataState,
                                           )));
                               },
                               child: Card(

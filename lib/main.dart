@@ -18,7 +18,7 @@ void main() {
         builder: (_) => ThemeNotifier(themes[theme]),
         child: MaterialApp(
           theme: themes[theme],
-          title: 'Animeme',
+          title: 'Animemes',
           debugShowCheckedModeBanner: false,
           routes: {
             '/home': (context) => HomePage(),

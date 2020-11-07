@@ -212,13 +212,13 @@ class ErrorOccured extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Text(
-            'Oops! something went wrong.',
+            'Oops! Aconteceu algo de errado.',
             style: _themeData.textTheme.bodyText1,
           ),
           RaisedButton(
             onPressed: onTap,
             color: _themeData.accentColor,
-            child: Text('Retry',
+            child: Text('Tentar novamente',
                 style: _themeData.textTheme.bodyText1.copyWith(
                   color: _themeData.primaryColor,
                 )),
